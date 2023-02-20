@@ -1,17 +1,13 @@
 package com.example.sociallapp.api;
 
+import com.example.sociallapp.dao.ProfileDao;
 import com.example.sociallapp.dao.UserDao;
-import com.example.sociallapp.models.Test;
+import com.example.sociallapp.models.Profile;
 import com.example.sociallapp.models.Users;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 
@@ -20,6 +16,9 @@ import java.util.Optional;
 public class MainController {
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    ProfileDao profileDao;
 
     @GetMapping("/user/{id}")
     public Users test(@PathVariable String id){
@@ -31,13 +30,25 @@ public class MainController {
 
 }
 
-    @PostMapping(value =  "/create",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Users create_user(@RequestBody Users user){
-        userDao.save(user);
 
-        return user;
+
+
+    @GetMapping("/profile/{id}")
+    public Profile getProfile(@PathVariable("id") long id){
+
+        return profileDao.findByid(id);
+    }
+
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/profile/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public void update_profile(@PathVariable("id") Long id, @RequestBody Profile profile){
+        Profile exprofile = profileDao.findByid(id);
+        exprofile.setName(profile.getName());
+        exprofile.setSurname(profile.getSurname());
+        profileDao.save_profile(exprofile);
 
     }
 
